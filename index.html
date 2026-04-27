@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PawSocial</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FFF8F6;min-height:100vh;color:#1a1a1a}
+.page{display:none;min-height:100vh}
+.page.active{display:flex}
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:#FFF8F6}
+.auth-box{width:100%;max-width:420px}
+.logo{text-align:center;margin-bottom:28px}
+.logo-mark{font-size:28px;font-weight:700;letter-spacing:-0.5px;color:#1a1a1a}
+.logo-mark span{color:#E24B4A}
+.logo-tag{font-size:13px;color:#999;margin-top:4px}
+.card{background:#fff;border-radius:20px;padding:28px 28px 24px;border:1px solid #f0ece8}
+.card-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.card-sub{font-size:13px;color:#888;margin-bottom:22px}
+.field{margin-bottom:14px}
+.lbl{font-size:13px;font-weight:500;color:#444;display:block;margin-bottom:5px}
+.lbl em{color:#E24B4A;font-style:normal}
+.inp-wrap{position:relative}
+.inp{width:100%;padding:11px 14px;border:1.5px solid #e8e3e0;border-radius:10px;font-size:14px;outline:none;background:#fff;transition:border-color .2s,box-shadow .2s;color:#1a1a1a}
+.inp:focus{border-color:#E24B4A;box-shadow:0 0 0 3px #FAECE7}
+.inp.ok{border-color:#1D9E75}
+.inp.er{border-color:#E24B4A;background:#FFF8F6}
+.inp-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.err{font-size:12px;color:#E24B4A;margin-top:5px;display:flex;align-items:center;gap:4px}
+.err::before{content:'⚠';font-size:11px}
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:40px}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:#aaa;padding:0}
+.forgot{font-size:12px;color:#E24B4A;text-align:right;cursor:pointer;display:block;margin-top:5px}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;position:relative}
+.btn-red{background:#E24B4A;color:#fff}
+.btn-red:hover:not(:disabled){opacity:.9}
+.btn-red:disabled{background:#f0ece8;color:#bbb;cursor:not-allowed}
+.btn-out{background:#fff;color:#555;border:1.5px solid #e8e3e0;margin-top:10px}
+.btn-out:hover{border-color:#ccc}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#ccc;font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#f0ece8}
+.social-btn{width:100%;padding:11px;border:1.5px solid #e8e3e0;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;color:#1a1a1a}
+.social-btn:hover{border-color:#ccc}
+.auth-footer{text-align:center;margin-top:16px;font-size:13px;color:#888}
+.auth-footer a{color:#E24B4A;font-weight:500;cursor:pointer}
+.back-link{font-size:13px;color:#E24B4A;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:16px;background:none;border:none;padding:0}
+.pw-strength{height:4px;border-radius:4px;margin-top:6px;background:#f0ece8;overflow:hidden}
+.pw-strength-bar{height:100%;border-radius:4px;transition:all .3s;width:0}
+.pw-hint{font-size:11px;color:#aaa;margin-top:4px}
+.otp-row{display:flex;gap:8px}
+.otp-row input{flex:1;text-align:center;font-size:20px;font-weight:700;padding:12px 4px;letter-spacing:1px}
+.resend-area{text-align:center;margin-top:10px;font-size:12px;color:#888}
+.resend-area span{color:#E24B4A;cursor:pointer}
+.phone-row{display:flex;gap:8px}
+.country-sel{width:95px;padding:11px 10px;border:1.5px solid #e8e3e0;border-radius:10px;font-size:14px;outline:none;background:#fff;cursor:pointer;flex-shrink:0;color:#1a1a1a}
+.step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:22px}
+.dot{width:8px;height:8px;border-radius:50%;background:#f0ece8;transition:all .3s}
+.dot.act{background:#E24B4A;width:24px;border-radius:4px}
+.dot.done{background:#1D9E75}
+/* CREATE PET */
+.pet-wrap{flex:1;display:flex;flex-direction:column;background:#FFF8F6}
+.pet-header{padding:20px 24px 0;display:flex;align-items:center;gap:12px}
+.pet-body{flex:1;padding:0 24px 32px;max-width:540px;margin:0 auto;width:100%}
+.prog-bar{height:4px;background:#f0ece8;border-radius:4px;margin:18px 0 26px;overflow:hidden}
+.prog-fill{height:100%;background:#E24B4A;border-radius:4px;transition:width .4s}
+.sec-title{font-size:15px;font-weight:600;margin-bottom:14px}
+.photo-upload{width:100px;height:100px;border-radius:50%;border:2px dashed #e0dad6;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:#fff;margin:0 auto 6px;position:relative;overflow:hidden;transition:border-color .2s}
+.photo-upload:hover{border-color:#E24B4A}
+.breed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.breed-chip{padding:10px 6px;border:1.5px solid #e8e3e0;border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff}
+.breed-chip:hover,.breed-chip.sel{border-color:#E24B4A;background:#FFF0EF}
+.breed-chip .bc-icon{font-size:22px;margin-bottom:2px}
+.breed-chip .bc-name{font-size:11px;color:#555}
+.breed-chip.sel .bc-name{color:#E24B4A;font-weight:500}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px}
+.tag-chip{padding:7px 14px;border:1.5px solid #e8e3e0;border-radius:20px;font-size:13px;cursor:pointer;background:#fff;transition:all .2s;color:#555}
+.tag-chip:hover{border-color:#E24B4A;color:#E24B4A}
+.tag-chip.sel{background:#E24B4A;border-color:#E24B4A;color:#fff}
+.inp-row{display:flex;gap:8px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23aaa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+/* MAIN APP */
+.app{flex:1;display:flex;height:100vh;overflow:hidden;background:#FFF8F6}
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid #f0ece8;display:flex;flex-direction:column;padding:16px 0}
+.sb-logo{padding:4px 18px 16px;font-size:18px;font-weight:700;border-bottom:1px solid #f0ece8;margin-bottom:8px}
+.sb-logo span{color:#E24B4A}
+.sb-item{padding:11px 18px;font-size:14px;color:#666;cursor:pointer;display:flex;align-items:center;gap:10px;border-left:2.5px solid transparent;transition:all .15s}
+.sb-item:hover{background:#FFF8F6;color:#1a1a1a}
+.sb-item.act{background:#FFF0EF;color:#E24B4A;border-left-color:#E24B4A;font-weight:500}
+.sb-bottom{margin-top:auto;padding:12px 16px;border-top:1px solid #f0ece8}
+.sb-pet{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px;border-radius:10px}
+.sb-pet:hover{background:#FFF8F6}
+.ava{border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ava-sm{width:36px;height:36px;font-size:18px}
+.ava-md{width:44px;height:44px;font-size:22px}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:0 20px;height:52px;border-bottom:1px solid #f0ece8;background:#fff;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:600;flex:1}
+.search{background:#FFF8F6;border:1px solid #f0ece8;border-radius:20px;padding:7px 14px;font-size:13px;width:190px;outline:none;color:#1a1a1a}
+.notif-btn{width:34px;height:34px;border-radius:50%;border:1px solid #f0ece8;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;position:relative}
+.notif-badge{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#E24B4A;border:2px solid #fff}
+.scroll-area{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.scroll-area::-webkit-scrollbar{width:4px}
+.scroll-area::-webkit-scrollbar-thumb{background:#f0ece8;border-radius:4px}
+.compose{background:#fff;border-radius:14px;padding:14px;border:1px solid #f0ece8}
+.c-row{display:flex;gap:10px;align-items:flex-start}
+.c-inp{flex:1;background:#FFF8F6;border:none;border-radius:20px;padding:9px 14px;font-size:13px;color:#1a1a1a;resize:none;font-family:inherit;outline:none;line-height:1.5}
+.c-actions{display:flex;gap:8px;margin-top:10px;justify-content:space-between;align-items:center}
+.c-tools{display:flex;gap:6px}
+.c-tool{padding:6px 10px;border-radius:8px;border:1px solid #f0ece8;background:#fff;font-size:12px;cursor:pointer;color:#666}
+.c-tool:hover{border-color:#E24B4A;color:#E24B4A}
+.c-post{padding:7px 18px;background:#E24B4A;color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer}
+.post{background:#fff;border-radius:14px;padding:14px;border:1px solid #f0ece8}
+.p-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.p-name{font-size:14px;font-weight:600}
+.p-breed{font-size:12px;color:#aaa}
+.p-time{font-size:11px;color:#bbb;margin-left:auto}
+.p-body{font-size:13px;line-height:1.65;color:#333;margin-bottom:10px}
+.p-img{width:100%;border-radius:10px;margin-bottom:10px;background:#f5f0ee;height:180px;display:flex;align-items:center;justify-content:center;font-size:56px}
+.p-tags{margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px}
+.p-tag{font-size:11px;background:#FFF0EF;color:#993C1D;padding:3px 10px;border-radius:20px}
+.p-actions{display:flex;gap:4px}
+.p-btn{flex:1;padding:7px 4px;border:none;background:none;border-radius:8px;font-size:12px;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.p-btn:hover{background:#FFF8F6;color:#E24B4A}
+.p-btn.liked{color:#E24B4A;font-weight:500}
+.p-div{height:1px;background:#f5f0ee;margin:10px 0}
+.comments{display:flex;flex-direction:column;gap:8px}
+.comment{display:flex;gap:8px}
+.c-body{background:#FFF8F6;border-radius:10px;padding:8px 12px;flex:1}
+.c-author{font-size:12px;font-weight:600;margin-bottom:2px}
+.c-text{font-size:12px;color:#555;line-height:1.5}
+.c-write{display:flex;gap:8px;margin-top:10px;align-items:center}
+.c-write input{flex:1;background:#FFF8F6;border:none;border-radius:20px;padding:8px 14px;font-size:12px;outline:none;color:#1a1a1a}
+.c-write button{padding:7px 14px;background:#E24B4A;color:#fff;border:none;border-radius:20px;font-size:12px;cursor:pointer}
+.right-panel{width:250px;flex-shrink:0;background:#fff;border-left:1px solid #f0ece8;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.rp-card{background:#FFF8F6;border-radius:12px;padding:12px}
+.rp-title{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.club-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f5f0ee;cursor:pointer}
+.club-row:last-child{border-bottom:none}
+.club-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.club-nm{font-size:13px;font-weight:500}
+.club-cnt{font-size:11px;color:#aaa}
+.nearby-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.nb-info{flex:1}
+.nb-name{font-size:13px;font-weight:500}
+.nb-dist{font-size:11px;color:#aaa}
+.nb-btn{padding:4px 10px;border:1px solid #e8e3e0;background:#fff;border-radius:20px;font-size:11px;cursor:pointer;color:#555}
+.nb-btn:hover{border-color:#E24B4A;color:#E24B4A}
+.trending-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f5f0ee;cursor:pointer}
+.trending-item:last-child{border-bottom:none}
+.tr-num{font-size:13px;font-weight:700;color:#E24B4A;width:16px}
+.tr-tag{font-size:13px;color:#333}
+.tr-cnt{font-size:11px;color:#aaa;margin-left:auto}
+.tab-bar{display:flex;border-bottom:1px solid #f0ece8;background:#fff;padding:0 20px;flex-shrink:0}
+.tab{padding:12px 16px;font-size:13px;cursor:pointer;color:#aaa;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:#555}
+.tab.act{color:#E24B4A;border-bottom-color:#E24B4A;font-weight:500}
+.clubs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px}
+.club-card{background:#fff;border:1px solid #f0ece8;border-radius:14px;padding:16px;cursor:pointer;transition:border-color .2s}
+.club-card:hover{border-color:#E24B4A}
+.cc-icon{font-size:30px;margin-bottom:8px}
+.cc-name{font-size:14px;font-weight:600;margin-bottom:3px}
+.cc-desc{font-size:12px;color:#888;margin-bottom:10px;line-height:1.5}
+.cc-foot{display:flex;align-items:center;justify-content:space-between}
+.cc-cnt{font-size:11px;color:#aaa}
+.cc-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;border:none;cursor:pointer}
+.cc-btn.join{background:#E24B4A;color:#fff}
+.cc-btn.joined{background:#f0ece8;color:#888}
+.profile-view{padding-bottom:20px}
+.profile-cover{height:120px;background:linear-gradient(135deg,#FAECE7,#F4C0D1 50%,#E1F5EE)}
+.profile-avatar-area{padding:0 20px;margin-top:-34px;display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
+.pa-lg{width:68px;height:68px;border-radius:50%;background:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:38px}
+.edit-btn{padding:8px 18px;background:#fff;border:1.5px solid #e8e3e0;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px}
+.pf-info{padding:0 20px 16px}
+.pf-name{font-size:20px;font-weight:700;margin-bottom:3px}
+.pf-bio{font-size:13px;color:#888;line-height:1.5;margin-bottom:10px}
+.pf-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pf-tag{background:#FFF0EF;color:#993C1D;font-size:12px;padding:4px 12px;border-radius:20px}
+.pf-stats{display:flex;border:1px solid #f0ece8;border-radius:12px;overflow:hidden;background:#fff}
+.pf-stat{flex:1;text-align:center;padding:12px 8px;border-right:1px solid #f0ece8}
+.pf-stat:last-child{border-right:none}
+.pf-stat-n{font-size:18px;font-weight:700}
+.pf-stat-l{font-size:11px;color:#aaa;margin-top:2px}
+.pf-posts{padding:16px 20px 0}
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pf-thumb{aspect-ratio:1;border-radius:8px;background:#f0ece8;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px;padding:24px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#aaa}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="page active" id="pg-login">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="logo">
+        <div class="logo-mark">Paw<span>Social</span> 🐾</div>
+        <div class="logo-tag">為毛小孩打造的社交世界</div>
+      </div>
+      <div class="card">
+        <div class="card-title">歡迎回來</div>
+        <div class="card-sub">登入後繼續你的毛小孩社交</div>
+        <div class="field">
+          <label class="lbl">電子信箱 <em>*</em></label>
+          <div class="inp-wrap">
+            <input class="inp" type="email" id="li-email" placeholder="example@email.com" oninput="liveValidate('li-email','email')">
+            <span class="inp-icon" id="li-email-ic"></span>
+          </div>
+          <div class="err" id="li-email-err" style="display:none">請輸入有效的電子信箱</div>
+        </div>
+        <div class="field">
+          <label class="lbl">密碼 <em>*</em></label>
+          <div class="pw-wrap">
+            <input class="inp" type="password" id="li-pw" placeholder="輸入密碼" oninput="liveValidate('li-pw','pw')">
+            <button class="eye" onclick="togglePw('li-pw',this)" tabindex="-1">👁</button>
+          </div>
+          <div class="err" id="li-pw-err" style="display:none">密碼不能為空</div>
+          <span class="forgot" onclick="showPage('pg-forgot')">忘記密碼？</span>
+        </div>
+        <div class="err" id="li-main-err" style="display:none;margin-bottom:10px">信箱或密碼不正確，請重試</div>
+        <button class="btn btn-red" id="li-btn" onclick="doLogin()">登入</button>
+        <div class="divider">或</div>
+        <button class="social-btn">🍎 &nbsp;使用 Apple 登入</button>
+        <button class="social-btn">G &nbsp;使用 Google 登入</button>
+      </div>
+      <div class="auth-footer">還沒有帳號？<a onclick="showPage('pg-register')">立即註冊</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FORGOT PW ══ -->
+<div class="page" id="pg-forgot">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="logo"><div class="logo-mark">Paw<span>Social</span> 🐾</div></div>
+      <div class="card" id="fp-s1">
+        <button class="back-link" onclick="showPage('pg-login')">← 返回登入</button>
+        <div class="card-title">重設密碼</div>
+        <div class="card-sub">輸入你的信箱，我們將發送驗證碼</div>
+        <div class="field">
+          <label class="lbl">電子信箱 <em>*</em></label>
+          <div class="inp-wrap">
+            <input class="inp" id="fp-email" type="email" placeholder="example@email.com" oninput="liveValidate('fp-email','email')">
+            <span class="inp-icon" id="fp-email-ic"></span>
+          </div>
+          <div class="err" id="fp-email-err" style="display:none">請輸入有效的電子信箱</div>
+        </div>
+        <button class="btn btn-red" onclick="fpSend()">發送驗證碼</button>
+      </div>
+      <div class="card" id="fp-s2" style="display:none">
+        <button class="back-link" onclick="fpGoS1()">← 修改信箱</button>
+        <div class="card-title">輸入驗證碼</div>
+        <div class="card-sub">已發送至 <strong id="fp-display"></strong><br><small style="color:#aaa">測試用驗證碼：123456</small></div>
+        <div class="field" style="margin-top:16px">
+          <div class="otp-row">
+            <input class="inp" id="otp0" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)">
+            <input class="inp" id="otp1" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)">
+            <input class="inp" id="otp2" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)">
+            <input class="inp" id="otp3" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)">
+            <input class="inp" id="otp4" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)">
+            <input class="inp" id="otp5" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)">
+          </div>
+          <div class="err" id="otp-err" style="display:none">驗證碼不正確，請重試</div>
+        </div>
+        <div class="resend-area">沒收到？<span onclick="showToast('驗證碼已重新發送')">重新發送</span></div>
+        <button class="btn btn-red" style="margin-top:14px" onclick="fpVerify()">驗 證</button>
+      </div>
+      <div class="card" id="fp-s3" style="display:none">
+        <div class="card-title">設定新密碼</div>
+        <div class="card-sub">請設定一個安全的新密碼</div>
+        <div class="field">
+          <label class="lbl">新密碼 <em>*</em></label>
+          <div class="pw-wrap">
+            <input class="inp" type="password" id="np1" placeholder="至少 8 個字元" oninput="checkPwStrength();liveValidate('np1','pw8')">
+            <button class="eye" onclick="togglePw('np1',this)" tabindex="-1">👁</button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+          <div class="pw-hint" id="pw-hint">請輸入至少 8 個字元</div>
+          <div class="err" id="np1-err" style="display:none">密碼需至少 8 個字元</div>
+        </div>
+        <div class="field">
+          <label class="lbl">確認新密碼 <em>*</em></label>
+          <div class="pw-wrap">
+            <input class="inp" type="password" id="np2" placeholder="再次輸入密碼" oninput="liveValidate('np2','confirm')">
+            <button class="eye" onclick="togglePw('np2',this)" tabindex="-1">👁</button>
+          </div>
+          <div class="err" id="np2-err" style="display:none">兩次密碼不一致</div>
+        </div>
+        <button class="btn btn-red" onclick="fpReset()">完成重設</button>
+      </div>
+      <div class="card" id="fp-done" style="display:none;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">✅</div>
+        <div class="card-title" style="justify-content:center">密碼已重設</div>
+        <div class="card-sub" style="margin-bottom:20px">請使用新密碼重新登入</div>
+        <button class="btn btn-red" onclick="showPage('pg-login')">前往登入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REGISTER ══ -->
+<div class="page" id="pg-register">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="logo"><div class="logo-mark">Paw<span>Social</span> 🐾</div></div>
+      <div class="card">
+        <button class="back-link" onclick="showPage('pg-login')">← 返回登入</button>
+
+        <!-- Step 1: 基本資料 -->
+        <div id="rg-s1">
+          <div class="step-dots"><div class="dot act" id="rd0"></div><div class="dot" id="rd1"></div><div class="dot" id="rd2"></div></div>
+          <div class="card-title">建立帳號</div>
+          <div class="card-sub">填寫你的基本資料</div>
+          <div class="field">
+            <label class="lbl">姓名 <em>*</em></label>
+            <div class="inp-wrap">
+              <input class="inp" id="rg-name" placeholder="你的真實姓名" oninput="liveValidate('rg-name','name')">
+              <span class="inp-icon" id="rg-name-ic"></span>
+            </div>
+            <div class="err" id="rg-name-err" style="display:none">請輸入至少 2 個字的姓名</div>
+          </div>
+          <div class="field">
+            <label class="lbl">電子信箱 <em>*</em></label>
+            <div class="inp-wrap">
+              <input class="inp" type="email" id="rg-email" placeholder="example@email.com" oninput="liveValidate('rg-email','email')">
+              <span class="inp-icon" id="rg-email-ic"></span>
+            </div>
+            <div class="err" id="rg-email-err" style="display:none">請輸入有效的電子信箱</div>
+          </div>
+          <div class="field">
+            <label class="lbl">手機號碼 <em>*</em></label>
+            <div class="phone-row">
+              <select class="country-sel" id="rg-country">
+                <option value="+886">🇹🇼 +886</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+81">🇯🇵 +81</option>
+                <option value="+86">🇨🇳 +86</option>
+                <option value="+852">🇭🇰 +852</option>
+              </select>
+              <div class="inp-wrap" style="flex:1">
+                <input class="inp" type="tel" id="rg-phone" placeholder="0912 345 678" oninput="liveValidate('rg-phone','phone')">
+                <span class="inp-icon" id="rg-phone-ic"></span>
+              </div>
+            </div>
+            <div class="err" id="rg-phone-err" style="display:none">請輸入有效的手機號碼（9–10 碼）</div>
+          </div>
+          <div class="field">
+            <label class="lbl">密碼 <em>*</em></label>
+            <div class="pw-wrap">
+              <input class="inp" type="password" id="rg-pw" placeholder="至少 8 個字元" oninput="checkPwStrength('rg-pw','rg-bar','rg-phint');liveValidate('rg-pw','pw8')">
+              <button class="eye" onclick="togglePw('rg-pw',this)" tabindex="-1">👁</button>
+            </div>
+            <div class="pw-strength"><div class="pw-strength-bar" id="rg-bar"></div></div>
+            <div class="pw-hint" id="rg-phint">請輸入至少 8 個字元</div>
+            <div class="err" id="rg-pw-err" style="display:none">密碼需至少 8 個字元</div>
+          </div>
+          <button class="btn btn-red" onclick="rgStep2()">下一步：手機驗證</button>
+        </div>
+
+        <!-- Step 2: 驗證碼 -->
+        <div id="rg-s2" style="display:none">
+          <div class="step-dots"><div class="dot done" id="rd0b"></div><div class="dot act"></div><div class="dot" id="rd2b"></div></div>
+          <div class="card-title">驗證手機號碼</div>
+          <div class="card-sub">驗證碼已發送至 <strong id="rg-display"></strong><br><small style="color:#aaa">測試用驗證碼：123456</small></div>
+          <div class="field" style="margin-top:16px">
+            <div class="otp-row">
+              <input class="inp" id="rotp0" maxlength="1" oninput="otpInput(this,10)" onkeydown="otpKey(event,10)">
+              <input class="inp" id="rotp1" maxlength="1" oninput="otpInput(this,11)" onkeydown="otpKey(event,11)">
+              <input class="inp" id="rotp2" maxlength="1" oninput="otpInput(this,12)" onkeydown="otpKey(event,12)">
+              <input class="inp" id="rotp3" maxlength="1" oninput="otpInput(this,13)" onkeydown="otpKey(event,13)">
+              <input class="inp" id="rotp4" maxlength="1" oninput="otpInput(this,14)" onkeydown="otpKey(event,14)">
+              <input class="inp" id="rotp5" maxlength="1" oninput="otpInput(this,15)" onkeydown="otpKey(event,15)">
+            </div>
+            <div class="err" id="rotp-err" style="display:none">驗證碼不正確，請重試</div>
+          </div>
+          <div class="resend-area">沒收到？<span onclick="showToast('驗證碼已重新發送')">重新發送</span></div>
+          <button class="btn btn-red" style="margin-top:14px" onclick="rgStep3()">驗證並繼續</button>
+          <button class="btn btn-out" onclick="rgGoS1()">← 修改資料</button>
+        </div>
+
+        <!-- Step 3: 使用者協議 -->
+        <div id="rg-s3" style="display:none">
+          <div class="step-dots"><div class="dot done"></div><div class="dot done"></div><div class="dot act"></div></div>
+          <div class="card-title">服務條款</div>
+          <div class="card-sub">請閱讀並同意以下條款</div>
+          <div style="border:1.5px solid #e8e3e0;border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="height:120px;overflow-y:auto;font-size:12px;color:#666;line-height:1.7;padding-right:4px" id="tos-scroll">
+              <b>一、服務說明</b><br>PawSocial 是一個以寵物為主角的社交平台，讓主人以寵物身份互動、加入品種社團及尋找玩伴。<br><br>
+              <b>二、帳號責任</b><br>您有責任維護帳號安全，個人資料應真實，不得假冒他人寵物或發布不實資訊。<br><br>
+              <b>三、內容規範</b><br>不得發布歧視言論、暴力內容、侵害著作權素材或廣告詐騙訊息。<br><br>
+              <b>四、隱私政策</b><br>您的手機及信箱僅用於驗證與通知，不會出售或提供第三方。<br><br>
+              <b>五、動物福利</b><br>嚴禁分享任何虐待動物的相關內容，違者立即停權。<br><br>
+              <b>六、免責聲明</b><br>平台不對用戶間互動行為所產生之糾紛負責，請在安全公共場所安排見面。
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#444">
+              <input type="checkbox" id="tos-1" style="margin-top:2px;width:15px;height:15px;accent-color:#E24B4A" onchange="checkTos()">
+              我已閱讀並同意 <span style="color:#E24B4A">服務條款</span> 及 <span style="color:#E24B4A">隱私政策</span>&nbsp;<em style="color:#E24B4A;font-style:normal">*</em>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#444">
+              <input type="checkbox" id="tos-2" style="margin-top:2px;width:15px;height:15px;accent-color:#E24B4A" onchange="checkTos()">
+              我承諾不發布任何傷害動物的內容&nbsp;<em style="color:#E24B4A;font-style:normal">*</em>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#888">
+              <input type="checkbox" id="tos-3" style="margin-top:2px;width:15px;height:15px;accent-color:#E24B4A">
+              接收 PawSocial 最新消息（可選）
+            </label>
+          </div>
+          <div class="err" id="tos-err" style="display:none;margin-bottom:10px">請勾選必填的同意項目</div>
+          <button class="btn btn-red" id="rg-finish-btn" onclick="rgFinish()" disabled>完成註冊</button>
+        </div>
+      </div>
+      <div class="auth-footer">已有帳號？<a onclick="showPage('pg-login')">登入</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREATE PET ══ -->
+<div class="page" id="pg-createpet">
+  <div class="pet-wrap">
+    <div class="pet-header">
+      <span style="font-size:15px;font-weight:600;padding-top:4px">建立寵物檔案</span>
+    </div>
+    <div class="pet-body">
+      <div class="prog-bar"><div class="prog-fill" id="prog" style="width:33%"></div></div>
+      <div id="pet-s1">
+        <div class="pet-section">
+          <div class="sec-title" style="text-align:center;font-size:16px">上傳寵物照片</div>
+          <div style="text-align:center;margin-bottom:20px">
+            <div class="photo-upload" onclick="pickPhoto()" id="photo-zone">
+              <div style="font-size:28px;color:#ddd">📷</div>
+              <div style="font-size:11px;color:#bbb;margin-top:4px">點擊上傳</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl">寵物名字 <em>*</em></label>
+          <div class="inp-wrap">
+            <input class="inp" id="pet-name" placeholder="例：小柴 Kuro" oninput="liveValidate('pet-name','name')">
+            <span class="inp-icon" id="pet-name-ic"></span>
+          </div>
+          <div class="err" id="pet-name-err" style="display:none">請輸入寵物名字</div>
+        </div>
+        <div class="inp-row" style="margin-bottom:14px">
+          <div style="flex:1">
+            <label class="lbl">性別</label>
+            <select class="inp" id="pet-gender"><option value="">選擇</option><option>男生 ♂</option><option>女生 ♀</option><option>已結紮</option></select>
+          </div>
+          <div style="flex:1">
+            <label class="lbl">年齡</label>
+            <input class="inp" id="pet-age" type="number" placeholder="幾歲" min="0" max="30">
+          </div>
+        </div>
+        <button class="btn btn-red" onclick="petS2()">下一步：選擇品種 →</button>
+      </div>
+
+      <div id="pet-s2" style="display:none">
+        <div class="field"><input class="inp" placeholder="搜尋品種..." oninput="filterBreeds(this.value)"></div>
+        <div class="sec-title">選擇品種 <em style="font-size:12px;font-weight:400;color:#aaa;font-style:normal">（必選）</em></div>
+        <div class="breed-grid" id="breed-grid" style="margin-bottom:14px"></div>
+        <div class="err" id="breed-err" style="display:none;margin-bottom:10px">請選擇或輸入品種</div>
+        <div class="field">
+          <label class="lbl">自訂品種（找不到時填寫）</label>
+          <input class="inp" id="custom-breed" placeholder="例：混種犬、特殊品種...">
+        </div>
+        <button class="btn btn-red" onclick="petS3()">下一步：個性標籤 →</button>
+        <button class="btn btn-out" onclick="petGoS1()">← 返回</button>
+      </div>
+
+      <div id="pet-s3" style="display:none">
+        <div class="sec-title">個性標籤 <span style="font-size:12px;font-weight:400;color:#aaa">（最多 5 個，至少選 1 個）</span></div>
+        <div class="tag-cloud" id="tag-cloud" style="margin-bottom:14px"></div>
+        <div class="err" id="tag-err" style="display:none;margin-bottom:10px">請至少選擇 1 個個性標籤</div>
+        <div class="field">
+          <label class="lbl">一句話介紹</label>
+          <input class="inp" id="pet-bio" placeholder="例：熱愛零食、見誰都搖尾巴的柴柴 🐾">
+        </div>
+        <button class="btn btn-red" onclick="finishPet()">完成建立 🎉</button>
+        <button class="btn btn-out" onclick="petGoS2()">← 返回</button>
+      </div>
+
+      <div id="pet-done" style="display:none;text-align:center;padding:40px 0">
+        <div style="font-size:64px;margin-bottom:16px">🎉</div>
+        <div style="font-size:22px;font-weight:700;margin-bottom:8px">寵物檔案已建立！</div>
+        <div style="font-size:14px;color:#888;margin-bottom:24px">快去動態牆看看其他毛小孩吧！</div>
+        <button class="btn btn-red" style="width:auto;padding:12px 36px" onclick="enterApp()">進入 PawSocial 🐾</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div class="page" id="pg-app">
+  <div class="app">
+    <div class="sidebar">
+      <div class="sb-logo">Paw<span>Social</span></div>
+      <div class="sb-item act" onclick="switchTab('feed',this)"><span>🏠</span> 動態牆</div>
+      <div class="sb-item" onclick="switchTab('clubs',this)"><span>🐾</span> 品種社團</div>
+      <div class="sb-item" onclick="switchTab('nearby',this)"><span>📍</span> 附近玩伴</div>
+      <div class="sb-item" onclick="switchTab('profile',this)"><span>🐶</span> 我的檔案</div>
+      <div class="sb-item" onclick="openNotif()">
+        <span>🔔</span> 通知
+        <span style="margin-left:auto;background:#E24B4A;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px" id="notif-count">3</span>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-pet">
+          <div class="ava ava-sm" style="background:#FAECE7">🐶</div>
+          <div><div style="font-size:13px;font-weight:600" id="app-petname">小柴 Kuro</div><div style="font-size:11px;color:#aaa">柴犬 · 3歲</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="main-area">
+      <div id="tab-feed" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+        <div class="topbar">
+          <div class="tb-title">動態牆</div>
+          <input class="search" placeholder="搜尋毛小孩或話題...">
+          <div class="notif-btn" onclick="openNotif()">🔔<div class="notif-badge"></div></div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab act">全部</div><div class="tab">朋友</div><div class="tab">社團</div><div class="tab">附近</div>
+        </div>
+        <div class="scroll-area" id="feed-list">
+          <div class="compose">
+            <div class="c-row">
+              <div class="ava ava-sm" style="background:#FAECE7">🐶</div>
+              <textarea class="c-inp" rows="2" id="compose-inp" placeholder="小柴 Kuro 想說什麼？汪！"></textarea>
+            </div>
+            <div class="c-actions">
+              <div class="c-tools">
+                <button class="c-tool" onclick="showToast('照片功能開發中')">📷 照片</button>
+                <button class="c-tool" onclick="showToast('標籤功能開發中')">🏷 標籤</button>
+                <button class="c-tool" onclick="showToast('位置功能開發中')">📍 位置</button>
+              </div>
+              <button class="c-post" onclick="submitPost()">發文</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-clubs" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+        <div class="topbar"><div class="tb-title">品種社團</div><input class="search" placeholder="搜尋社團..."></div>
+        <div class="scroll-area" style="display:block"><div class="clubs-grid" id="clubs-grid"></div></div>
+      </div>
+      <div id="tab-nearby" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+        <div class="topbar"><div class="tb-title">附近的毛小孩</div><input class="search" placeholder="搜尋品種..."></div>
+        <div class="scroll-area" id="nearby-list" style="display:block"></div>
+      </div>
+      <div id="tab-profile" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+        <div class="scroll-area profile-view" style="padding:0;gap:0">
+          <div class="profile-cover"></div>
+          <div class="profile-avatar-area"><div class="pa-lg">🐶</div><button class="edit-btn">編輯檔案</button></div>
+          <div class="pf-info">
+            <div class="pf-name">小柴 Kuro</div>
+            <div class="pf-bio">柴柴一枚 · 愛曬太陽 · 討厭洗澡 · 零食控 🍖</div>
+            <div class="pf-tags"><span class="pf-tag">愛玩</span><span class="pf-tag">怕生</span><span class="pf-tag">零食控</span><span class="pf-tag">曬太陽</span></div>
+            <div class="pf-stats">
+              <div class="pf-stat"><div class="pf-stat-n" id="s-friends">128</div><div class="pf-stat-l">朋友</div></div>
+              <div class="pf-stat"><div class="pf-stat-n" id="s-posts">47</div><div class="pf-stat-l">貼文</div></div>
+              <div class="pf-stat"><div class="pf-stat-n">312</div><div class="pf-stat-l">爪印</div></div>
+              <div class="pf-stat"><div class="pf-stat-n">5</div><div class="pf-stat-l">社團</div></div>
+            </div>
+          </div>
+          <div class="pf-posts">
+            <div style="font-size:14px;font-weight:600;margin-bottom:10px">貼文紀錄</div>
+            <div class="pf-grid" id="pf-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="rp-card">
+        <div class="rp-title">熱門社團</div>
+        <div class="club-row"><div class="club-icon" style="background:#FAECE7">🐕</div><div><div class="club-nm">柴犬社</div><div class="club-cnt">4,812 成員</div></div></div>
+        <div class="club-row"><div class="club-icon" style="background:#E1F5EE">🐈</div><div><div class="club-nm">英短社</div><div class="club-cnt">3,291 成員</div></div></div>
+        <div class="club-row"><div class="club-icon" style="background:#E6F1FB">🐩</div><div><div class="club-nm">貴賓犬社</div><div class="club-cnt">2,104 成員</div></div></div>
+        <div class="club-row"><div class="club-icon" style="background:#EEEDFE">🐰</div><div><div class="club-nm">兔兔社</div><div class="club-cnt">1,876 成員</div></div></div>
+      </div>
+      <div class="rp-card">
+        <div class="rp-title">熱門話題</div>
+        <div class="trending-item"><span class="tr-num">1</span><span class="tr-tag">#柴犬日常</span><span class="tr-cnt">2.4k</span></div>
+        <div class="trending-item"><span class="tr-num">2</span><span class="tr-tag">#貓咪躲躲</span><span class="tr-cnt">1.8k</span></div>
+        <div class="trending-item"><span class="tr-num">3</span><span class="tr-tag">#美容打卡</span><span class="tr-cnt">986</span></div>
+        <div class="trending-item"><span class="tr-num">4</span><span class="tr-tag">#找玩伴</span><span class="tr-cnt">754</span></div>
+      </div>
+      <div class="rp-card">
+        <div class="rp-title">附近的毛小孩</div>
+        <div class="nearby-row"><div class="ava ava-sm" style="background:#E1F5EE">🐱</div><div class="nb-info"><div class="nb-name">橘子 Mochi</div><div class="nb-dist">230m · 英短</div></div><button class="nb-btn" onclick="showToast('已送出好友邀請！')">加好友</button></div>
+        <div class="nearby-row"><div class="ava ava-sm" style="background:#EEEDFE">🐕</div><div class="nb-info"><div class="nb-name">福福 Fufu</div><div class="nb-dist">480m · 黃金獵犬</div></div><button class="nb-btn" onclick="showToast('已送出好友邀請！')">加好友</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notif Modal -->
+<div class="modal-overlay" id="notif-modal" onclick="if(event.target===this)closeNotif()">
+  <div class="modal">
+    <div class="modal-title">通知 <button class="modal-close" onclick="closeNotif()">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:10px;padding:10px;background:#FFF8F6;border-radius:10px">
+        <div class="ava ava-sm" style="background:#E1F5EE">🐱</div>
+        <div><span style="font-size:13px"><b>橘子 Mochi</b> 對你的貼文按了爪印</span><div style="font-size:11px;color:#aaa;margin-top:3px">10 分鐘前</div></div>
+      </div>
+      <div style="display:flex;gap:10px;padding:10px;background:#FFF8F6;border-radius:10px">
+        <div class="ava ava-sm" style="background:#EEEDFE">🐕</div>
+        <div><span style="font-size:13px"><b>福福 Fufu</b> 送出好友邀請</span><div style="font-size:11px;color:#aaa;margin-top:3px">1 小時前</div><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-red" style="width:auto;padding:6px 14px;font-size:12px" onclick="showToast('已接受好友邀請！');closeNotif()">接受</button><button class="btn btn-out" style="width:auto;padding:6px 14px;font-size:12px;margin-top:0">拒絕</button></div></div>
+      </div>
+      <div style="display:flex;gap:10px;padding:10px;border-radius:10px">
+        <div class="ava ava-sm" style="background:#FAECE7">🐰</div>
+        <div><span style="font-size:13px"><b>糯米 Nomi</b> 在柴犬社留言了</span><div style="font-size:11px;color:#aaa;margin-top:3px">昨天</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── FAKE DB (登入用) ──
+const USERS = [{email:'test@test.com',pw:'12345678',name:'阿明'}];
+
+// ── VALID HELPERS ──
+function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())}
+function isPhone(v){return /^[0-9]{9,10}$/.test(v.replace(/\s/g,''))}
+function isPw(v){return v.length>=8}
+function isName(v){return v.trim().length>=2}
+
+function liveValidate(id,type){
+  const el=document.getElementById(id);
+  const v=el.value;
+  const errEl=document.getElementById(id+'-err');
+  const icEl=document.getElementById(id+'-ic');
+  let ok=false;
+  if(type==='email') ok=isEmail(v);
+  else if(type==='phone') ok=isPhone(v);
+  else if(type==='pw'||type==='pw8') ok=isPw(v);
+  else if(type==='name') ok=isName(v);
+  else if(type==='confirm'){
+    const other=document.getElementById('np1')||document.getElementById('rg-pw');
+    ok=v===other.value && isPw(v);
+  }
+  if(v){
+    el.className='inp '+(ok?'ok':'er');
+    if(icEl) icEl.textContent=ok?'✓':'';
+    if(errEl) errEl.style.display=ok?'none':'flex';
+  } else {
+    el.className='inp';
+    if(icEl) icEl.textContent='';
+    if(errEl) errEl.style.display='none';
+  }
+  return ok;
+}
+
+function validateField(id,type){
+  const el=document.getElementById(id);
+  const v=el.value;
+  let ok=false;
+  if(type==='email') ok=isEmail(v);
+  else if(type==='phone') ok=isPhone(v);
+  else if(type==='pw'||type==='pw8') ok=isPw(v);
+  else if(type==='name') ok=isName(v);
+  const errEl=document.getElementById(id+'-err');
+  const icEl=document.getElementById(id+'-ic');
+  el.className='inp '+(ok?'ok':'er');
+  if(icEl) icEl.textContent=ok?'✓':'';
+  if(errEl) errEl.style.display=ok?'none':'flex';
+  if(!ok) el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),400);
+  return ok;
+}
+
+// ── PASSWORD STRENGTH ──
+function checkPwStrength(id='np1',barId='pw-bar',hintId='pw-hint'){
+  const v=document.getElementById(id).value;
+  const bar=document.getElementById(barId); const hint=document.getElementById(hintId);
+  if(!bar) return;
+  let score=0,msg='',color='';
+  if(v.length>=8) score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^A-Za-z0-9]/.test(v)) score++;
+  if(score<=1){color='#E24B4A';msg='強度：弱 — 建議加入數字或大寫字母'}
+  else if(score===2){color='#EF9F27';msg='強度：普通'}
+  else if(score===3){color='#63B3ED';msg='強度：良好'}
+  else{color='#1D9E75';msg='強度：強'}
+  bar.style.width=(score/4*100)+'%'; bar.style.background=color;
+  if(hint){hint.textContent=v?msg:'請輸入至少 8 個字元';}
+}
+
+// ── TOGGLE PW ──
+function togglePw(id,btn){
+  const i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+  btn.textContent=i.type==='password'?'👁':'🙈';
+}
+
+// ── PAGE NAV ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function enterApp(){showPage('pg-app');renderFeed();renderPfGrid();}
+
+// ── LOGIN ──
+function doLogin(){
+  const email=document.getElementById('li-email').value.trim();
+  const pw=document.getElementById('li-pw').value;
+  let ok=true;
+  if(!isEmail(email)){validateField('li-email','email');ok=false;}
+  if(!pw){
+    document.getElementById('li-pw').className='inp er';
+    document.getElementById('li-pw-err').style.display='flex';
+    document.getElementById('li-pw').classList.add('shake');
+    setTimeout(()=>document.getElementById('li-pw').classList.remove('shake'),400);
+    ok=false;
+  }
+  if(!ok) return;
+  // 示範：接受任何有效格式，或比對假DB
+  const match=USERS.find(u=>u.email===email)||{email,name:'用戶'};
+  showPage('pg-createpet'); renderBreeds(); renderTags();
+}
+
+// ── FORGOT PW ──
+function fpSend(){
+  if(!validateField('fp-email','email')) return;
+  document.getElementById('fp-display').textContent=document.getElementById('fp-email').value;
+  document.getElementById('fp-s1').style.display='none';
+  document.getElementById('fp-s2').style.display='block';
+}
+function fpGoS1(){
+  document.getElementById('fp-s1').style.display='block';
+  document.getElementById('fp-s2').style.display='none';
+  ['otp0','otp1','otp2','otp3','otp4','otp5'].forEach(id=>document.getElementById(id).value='');
+}
+function fpVerify(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+  if(code.length<6){
+    document.getElementById('otp-err').textContent='請填寫完整 6 位數驗證碼';
+    document.getElementById('otp-err').style.display='flex'; return;
+  }
+  if(code!=='123456'){
+    document.getElementById('otp-err').textContent='驗證碼不正確，請重試';
+    document.getElementById('otp-err').style.display='flex';
+    document.querySelectorAll('.otp-row input').forEach(el=>{el.value='';el.className='inp er';});
+    document.getElementById('otp0').focus(); return;
+  }
+  document.getElementById('fp-s2').style.display='none';
+  document.getElementById('fp-s3').style.display='block';
+}
+function fpReset(){
+  const ok1=validateField('np1','pw8');
+  const p1=document.getElementById('np1').value, p2=document.getElementById('np2').value;
+  let ok2=p2===p1&&isPw(p2);
+  document.getElementById('np2').className='inp '+(ok2?'ok':'er');
+  document.getElementById('np2-err').style.display=ok2?'none':'flex';
+  if(!ok2){document.getElementById('np2').classList.add('shake');setTimeout(()=>document.getElementById('np2').classList.remove('shake'),400);}
+  if(!ok1||!ok2) return;
+  document.getElementById('fp-s3').style.display='none';
+  document.getElementById('fp-done').style.display='block';
+}
+
+// ── REGISTER ──
+function rgStep2(){
+  const n=validateField('rg-name','name');
+  const e=validateField('rg-email','email');
+  const p=validateField('rg-phone','phone');
+  const pw=validateField('rg-pw','pw8');
+  if(!n||!e||!p||!pw) return;
+  const ph=document.getElementById('rg-country').value+' '+document.getElementById('rg-phone').value;
+  document.getElementById('rg-display').textContent=ph;
+  document.getElementById('rg-s1').style.display='none';
+  document.getElementById('rg-s2').style.display='block';
+}
+function rgGoS1(){
+  document.getElementById('rg-s2').style.display='none';
+  document.getElementById('rg-s1').style.display='block';
+  ['rotp0','rotp1','rotp2','rotp3','rotp4','rotp5'].forEach(id=>document.getElementById(id).value='');
+}
+function rgStep3(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('rotp'+i).value).join('');
+  if(code.length<6){
+    document.getElementById('rotp-err').textContent='請填寫完整 6 位數驗證碼';
+    document.getElementById('rotp-err').style.display='flex'; return;
+  }
+  if(code!=='123456'){
+    document.getElementById('rotp-err').textContent='驗證碼不正確，請重試';
+    document.getElementById('rotp-err').style.display='flex';
+    document.querySelectorAll('#rg-s2 .otp-row input').forEach(el=>{el.value='';el.className='inp er';});
+    document.getElementById('rotp0').focus(); return;
+  }
+  document.getElementById('rg-s2').style.display='none';
+  document.getElementById('rg-s3').style.display='block';
+}
+function checkTos(){
+  const ok=document.getElementById('tos-1').checked&&document.getElementById('tos-2').checked;
+  document.getElementById('rg-finish-btn').disabled=!ok;
+  if(ok) document.getElementById('tos-err').style.display='none';
+}
+function rgFinish(){
+  if(!document.getElementById('tos-1').checked||!document.getElementById('tos-2').checked){
+    document.getElementById('tos-err').style.display='flex'; return;
+  }
+  USERS.push({email:document.getElementById('rg-email').value,pw:document.getElementById('rg-pw').value,name:document.getElementById('rg-name').value});
+  showPage('pg-createpet'); renderBreeds(); renderTags();
+}
+
+// ── OTP KEYBOARD ──
+function otpInput(el,idx){
+  el.value=el.value.replace(/[^0-9]/g,'');
+  if(el.value.length===1){
+    const nextId=(idx<5?'otp'+(idx+1):idx>=10&&idx<15?'rotp'+(idx-10+1):null);
+    if(nextId) { const n=document.getElementById(nextId); if(n) n.focus(); }
+  }
+}
+function otpKey(e,idx){
+  if(e.key==='Backspace'&&e.target.value===''){
+    const prevId=(idx>0&&idx<=5?'otp'+(idx-1):idx>10?'rotp'+(idx-10-1):null);
+    if(prevId){ const p=document.getElementById(prevId); if(p){p.focus();p.value='';} }
+  }
+}
+
+// ── CREATE PET ──
+const BREEDS=[{icon:'🐕',name:'柴犬'},{icon:'🐈',name:'英國短毛貓'},{icon:'🐩',name:'貴賓犬'},{icon:'🐕‍🦺',name:'黃金獵犬'},{icon:'🐈‍⬛',name:'美國短毛貓'},{icon:'🐰',name:'兔兔'},{icon:'🐹',name:'倉鼠'},{icon:'🦜',name:'鸚鵡'},{icon:'🐟',name:'觀賞魚'},{icon:'🐾',name:'混種犬'},{icon:'😺',name:'混種貓'},{icon:'🦎',name:'爬蟲類'}];
+const TAGS=['愛玩','怕生','零食控','黏人精','獨立自主','愛曬太陽','討厭洗澡','愛撒嬌','高冷','愛吠叫','溫和友善','好奇寶寶','懶懶的','活力充沛','愛社交'];
+let selBreed='', selTags=new Set();
+
+function renderBreeds(q=''){
+  const g=document.getElementById('breed-grid'); g.innerHTML='';
+  BREEDS.filter(b=>b.name.includes(q)||!q).forEach(b=>{
+    const d=document.createElement('div');
+    d.className='breed-chip'+(selBreed===b.name?' sel':'');
+    d.innerHTML=`<div class="bc-icon">${b.icon}</div><div class="bc-name">${b.name}</div>`;
+    d.onclick=()=>{selBreed=b.name;renderBreeds(document.querySelector('#pet-s2 input').value||'');};
+    g.appendChild(d);
+  });
+}
+function filterBreeds(q){renderBreeds(q);}
+function renderTags(){
+  const c=document.getElementById('tag-cloud'); c.innerHTML='';
+  TAGS.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='tag-chip'+(selTags.has(t)?' sel':'');
+    d.textContent=t;
+    d.onclick=()=>{
+      if(selTags.has(t)){selTags.delete(t);}
+      else if(selTags.size>=5){showToast('最多選 5 個標籤');return;}
+      else{selTags.add(t);}
+      renderTags();
+    };
+    c.appendChild(d);
+  });
+}
+function pickPhoto(){
+  const z=document.getElementById('photo-zone');
+  z.innerHTML='<div style="font-size:44px">🐶</div><div style="font-size:11px;color:#E24B4A;margin-top:3px">已選擇</div>';
+  showToast('照片已上傳！');
+}
+function petS2(){
+  if(!validateField('pet-name','name')) return;
+  document.getElementById('pet-s1').style.display='none';
+  document.getElementById('pet-s2').style.display='block';
+  document.getElementById('prog').style.width='66%';
+}
+function petGoS1(){
+  document.getElementById('pet-s2').style.display='none';
+  document.getElementById('pet-s1').style.display='block';
+  document.getElementById('prog').style.width='33%';
+}
+function petS3(){
+  const custom=document.getElementById('custom-breed').value.trim();
+  if(!selBreed&&!custom){
+    document.getElementById('breed-err').style.display='flex'; return;
+  }
+  document.getElementById('breed-err').style.display='none';
+  document.getElementById('pet-s2').style.display='none';
+  document.getElementById('pet-s3').style.display='block';
+  document.getElementById('prog').style.width='100%';
+}
+function petGoS2(){
+  document.getElementById('pet-s3').style.display='none';
+  document.getElementById('pet-s2').style.display='block';
+  document.getElementById('prog').style.width='66%';
+}
+function finishPet(){
+  if(selTags.size===0){document.getElementById('tag-err').style.display='flex';return;}
+  document.getElementById('tag-err').style.display='none';
+  const name=document.getElementById('pet-name').value.trim();
+  if(name) document.getElementById('app-petname').textContent=name;
+  document.getElementById('pet-s3').style.display='none';
+  document.getElementById('pet-done').style.display='block';
+}
+
+// ── APP FEED ──
+const POSTS=[
+  {id:1,ava:'🐱',bg:'#E1F5EE',name:'橘子 Mochi',breed:'英國短毛貓 · 2歲',time:'10 分鐘前',body:'今天偷偷躲進草叢裡，主人找了我好久喵～隱身術滿分！',emoji:'🌿',tags:['#英短日常','#躲貓貓'],likes:34,comments:[{ava:'🐩',bg:'#E6F1FB',name:'貝果',text:'哈哈哈哈太可愛了！'},{ava:'🐕',bg:'#FAECE7',name:'小柴 Kuro',text:'羨慕你的隱身術！'}]},
+  {id:2,ava:'🐩',bg:'#E6F1FB',name:'貝果 Bagel',breed:'貴賓犬 · 4歲',time:'1 小時前',body:'剛去美容回來！主人說我是全台北最帥的貴賓，我假裝不在意但尾巴出賣了我 🎀',emoji:'',tags:['#貴賓社','#美容日'],likes:58,comments:[{ava:'🐱',bg:'#E1F5EE',name:'橘子 Mochi',text:'帥！合照一張？'}]},
+  {id:3,ava:'🐹',bg:'#FAECE7',name:'丸子 Maru',breed:'黃金倉鼠 · 1歲',time:'3 小時前',body:'今晚跑了 5 公里（在滾輪上）。健身打卡！雖然哪裡都沒去，但心已飛翔 🌟',emoji:'',tags:['#倉鼠社','#夜間運動'],likes:91,comments:[]},
+];
+let postList=[...POSTS], likedPosts=new Set();
+
+function renderFeed(){
+  const list=document.getElementById('feed-list');
+  list.querySelectorAll('.post').forEach(p=>p.remove());
+  postList.forEach(p=>list.appendChild(createPost(p)));
+}
+function createPost(p){
+  const div=document.createElement('div'); div.className='post'; div.id='post-'+p.id;
+  const liked=likedPosts.has(p.id);
+  div.innerHTML=`<div class="p-head"><div class="ava ava-sm" style="background:${p.bg}">${p.ava}</div><div style="flex:1"><div class="p-name">${p.name}</div><div class="p-breed">${p.breed}</div></div><div class="p-time">${p.time}</div></div>${p.emoji?`<div class="p-img">${p.emoji}</div>`:''}<div class="p-body">${p.body}</div><div class="p-tags">${p.tags.map(t=>`<span class="p-tag">${t}</span>`).join('')}</div><div class="p-actions"><button class="p-btn${liked?' liked':''}" id="like-${p.id}" onclick="toggleLike(${p.id})">🐾 ${liked?p.likes+1:p.likes}</button><button class="p-btn" onclick="toggleComments(${p.id})">💬 ${p.comments.length}</button><button class="p-btn" onclick="showToast('已分享！')">🦴 分享</button><button class="p-btn" onclick="showToast('已收藏！')">⭐ 收藏</button></div><div class="p-div"></div><div class="comments" id="comments-${p.id}">${p.comments.map(c=>`<div class="comment"><div class="ava ava-sm" style="background:${c.bg||'#f0ece8'}">${c.ava}</div><div class="c-body"><div class="c-author">${c.name}</div><div class="c-text">${c.text}</div></div></div>`).join('')}<div class="c-write"><div class="ava ava-sm" style="background:#FAECE7">🐶</div><input placeholder="以 Kuro 的名義留言..." id="ci-${p.id}"><button onclick="submitComment(${p.id})">送出</button></div></div>`;
+  return div;
+}
+function toggleLike(id){
+  const btn=document.getElementById('like-'+id), p=postList.find(x=>x.id===id);
+  if(!p) return;
+  if(likedPosts.has(id)){likedPosts.delete(id);btn.className='p-btn';btn.innerHTML=`🐾 ${p.likes}`;}
+  else{likedPosts.add(id);btn.className='p-btn liked';btn.innerHTML=`🐾 ${p.likes+1}`;}
+}
+function toggleComments(id){const c=document.getElementById('comments-'+id);c.style.display=c.style.display==='none'?'flex':'flex';}
+function submitComment(id){
+  const inp=document.getElementById('ci-'+id), txt=inp.value.trim(); if(!txt) return;
+  const p=postList.find(x=>x.id===id); if(!p) return;
+  p.comments.push({ava:'🐶',bg:'#FAECE7',name:'小柴 Kuro',text:txt});
+  inp.value='';
+  const c=document.getElementById('comments-'+id);
+  const d=document.createElement('div'); d.className='comment';
+  d.innerHTML=`<div class="ava ava-sm" style="background:#FAECE7">🐶</div><div class="c-body"><div class="c-author">小柴 Kuro</div><div class="c-text">${txt}</div></div>`;
+  c.insertBefore(d,c.querySelector('.c-write'));
+}
+function submitPost(){
+  const inp=document.getElementById('compose-inp'), txt=inp.value.trim(); if(!txt) return;
+  const np={id:Date.now(),ava:'🐶',bg:'#FAECE7',name:'小柴 Kuro',breed:'柴犬 · 3歲',time:'方才',body:txt,emoji:'',tags:['#柴犬社'],likes:0,comments:[]};
+  postList.unshift(np); inp.value='';
+  const list=document.getElementById('feed-list');
+  list.insertBefore(createPost(np),list.querySelector('.post'));
+  document.getElementById('s-posts').textContent=parseInt(document.getElementById('s-posts').textContent)+1;
+  showToast('發文成功！汪！');
+}
+
+// ── CLUBS ──
+const CLUBS=[
+  {icon:'🐕',name:'柴犬社',desc:'柴柴專屬，分享日常、找玩伴、曬照片',cnt:'4,812',joined:true},
+  {icon:'🐈',name:'英短社',desc:'圓滾滾的日常，胖臉控集合',cnt:'3,291',joined:false},
+  {icon:'🐩',name:'貴賓犬社',desc:'美容、造型、玩耍，優雅是天生的',cnt:'2,104',joined:false},
+  {icon:'🐰',name:'兔兔社',desc:'軟耳朵、大眼睛，世界最可愛',cnt:'1,876',joined:false},
+  {icon:'🐹',name:'倉鼠社',desc:'小小的身體，大大的靈魂',cnt:'987',joined:false},
+  {icon:'🦜',name:'鸚鵡社',desc:'話多、愛唱歌，最有個性的毛孩',cnt:'654',joined:false},
+  {icon:'🐕‍🦺',name:'黃金獵犬社',desc:'陽光、溫暖、永遠開心的狗狗',cnt:'2,341',joined:false},
+  {icon:'🐟',name:'觀賞魚社',desc:'靜靜游泳，療癒系毛孩',cnt:'432',joined:false}
+];
+function renderClubs(){
+  const g=document.getElementById('clubs-grid'); if(g.children.length) return;
+  CLUBS.forEach(c=>{
+    const d=document.createElement('div'); d.className='club-card';
+    d.innerHTML=`<div class="cc-icon">${c.icon}</div><div class="cc-name">${c.name}</div><div class="cc-desc">${c.desc}</div><div class="cc-foot"><span class="cc-cnt">${c.cnt} 成員</span><button class="cc-btn ${c.joined?'joined':'join'}" onclick="joinClub(this,'${c.name}')">${c.joined?'已加入':'加入'}</button></div>`;
+    g.appendChild(d);
+  });
+}
+function joinClub(btn,name){
+  if(btn.classList.contains('joined')){btn.className='cc-btn join';btn.textContent='加入';showToast('已離開 '+name);}
+  else{btn.className='cc-btn joined';btn.textContent='已加入';showToast('已加入 '+name+' 🎉');}
+}
+
+// ── NEARBY ──
+const NEARBY=[{ava:'🐱',bg:'#E1F5EE',name:'橘子 Mochi',breed:'英短',dist:'230m',age:'2歲'},{ava:'🐕',bg:'#EEEDFE',name:'福福 Fufu',breed:'黃金獵犬',dist:'480m',age:'4歲'},{ava:'🐰',bg:'#FAECE7',name:'糯米 Nomi',breed:'迷你兔',dist:'600m',age:'2歲'},{ava:'🐩',bg:'#E6F1FB',name:'貝果 Bagel',breed:'貴賓犬',dist:'1.2km',age:'4歲'},{ava:'🐹',bg:'#FFF8F6',name:'丸子 Maru',breed:'倉鼠',dist:'1.5km',age:'1歲'}];
+function renderNearby(){
+  const l=document.getElementById('nearby-list'); if(l.children.length) return;
+  NEARBY.forEach(p=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:14px;margin-bottom:10px;border:1px solid #f0ece8';
+    d.innerHTML=`<div class="ava ava-md" style="background:${p.bg}">${p.ava}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${p.name}</div><div style="font-size:12px;color:#aaa">${p.breed} · ${p.age}</div><div style="font-size:12px;color:#E24B4A;margin-top:2px">📍 ${p.dist}</div></div><button class="nb-btn" onclick="showToast('已送出好友邀請！')">加好友</button>`;
+    l.appendChild(d);
+  });
+}
+function renderPfGrid(){
+  const g=document.getElementById('pf-grid'); if(g.children.length) return;
+  ['🌿','🎀','🌟','🦴','🍖','🎾','🌸','🏖','🌲'].forEach(e=>{
+    const d=document.createElement('div'); d.className='pf-thumb'; d.textContent=e;
+    d.onclick=()=>showToast('查看貼文');
+    g.appendChild(d);
+  });
+}
+
+// ── SWITCH TAB ──
+function switchTab(name,el){
+  ['feed','clubs','nearby','profile'].forEach(t=>{const e=document.getElementById('tab-'+t);if(e)e.style.display='none';});
+  document.getElementById('tab-'+name).style.display='flex';
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('act'));
+  el.classList.add('act');
+  if(name==='clubs') renderClubs();
+  if(name==='nearby') renderNearby();
+  if(name==='profile') renderPfGrid();
+}
+
+// ── NOTIF ──
+function openNotif(){document.getElementById('notif-modal').classList.add('open');}
+function closeNotif(){document.getElementById('notif-modal').classList.remove('open');}
+
+// ── TOAST ──
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// INIT
+renderBreeds(); renderTags();
+</script>
+</body>
+</html>
